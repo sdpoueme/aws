@@ -7,7 +7,7 @@ exports.handler = async(event) => {
     const job = event["CodePipeline.job"];
     const jobId = job.id;
 
-    const DistributionId = job.data.actionConfiguration.configuration.UserParameters || 'E2ZKKCW7RC4LRU';
+    const DistributionId = job.data.actionConfiguration.configuration.UserParameters || '<DISTRIBUTION ID>';
 
     console.log(`invalidating CDN cache for DistributionId : ${DistributionId}...`);
 
