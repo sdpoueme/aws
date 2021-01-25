@@ -6,7 +6,7 @@ Parameters:
     Description: s3 bucket name
   cloudfrontOriginName:
     Type: String
-    Default: sdpoueme.s3.amazonaws.com
+    Default: sdpoueme-demo.s3.amazonaws.com
     Description: s3 bucket name
 Resources:
   CodeCommit:
