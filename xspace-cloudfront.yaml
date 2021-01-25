@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  xspaceBucketName:
+    Type: String
+    Default: xspace-cinco-universe
+    Description: s3 bucket name
+  cloudfrontOriginName:
+    Type: String
+    Default: xspace-cinco-universe.s3.amazonaws.com
+    Description: s3 bucket name
+  xspaceAlias:
+    Type: String
+    Default: cinco-xspace.com/universe
+    Description: xspace domain name
+Resources:
+  CodeCommit:
+    Type: 'AWS::CodeCommit::Repository'
+    Properties:
+      RepositoryDescription: !Ref xspaceBucketName
+      RepositoryName: !Ref xspaceBucketName
+  myDistribution:
+    Type: 'AWS::CloudFront::Distribution'
+    DependsOn: S3Bucket
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !Ref cloudfrontOriginName
+            Id: myS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: origin-access-identity/cloudfront/E757XVCJTNRIX
+        Enabled: 'true'
+        Comment: Some comment
+        DefaultRootObject: index.html
+        Logging:
+          IncludeCookies: 'false'
+          Bucket: clientasset-log.s3.amazonaws.com
+          Prefix: xspace
+        Aliases: []
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+          TargetOriginId: myS3Origin
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          TrustedSigners:
+            - 1234567890EX
+            - 1234567891EX
+          ViewerProtocolPolicy: allow-all
+        PriceClass: PriceClass_All
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: whitelist
+            Locations:
+              - AQ
+              - CV
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: PublicRead
+      BucketName: !Ref xspaceBucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref xspaceBucketName
+                - /*
+      Bucket: !Ref S3Bucket
+  
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt 
+      - S3Bucket
+      - WebsiteURL
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content
