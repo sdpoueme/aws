@@ -2,11 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   xspaceBucketName:
     Type: String
-    Default: checkride-ts
+    Default: sdpoueme-demo
     Description: s3 bucket name
   cloudfrontOriginName:
     Type: String
-    Default: checkride-ts.s3.amazonaws.com
+    Default: sdpoueme.s3.amazonaws.com
     Description: s3 bucket name
 Resources:
   CodeCommit:
@@ -20,20 +20,15 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Ref cloudfrontOriginName
-            Id: myS3Origin
-            S3OriginConfig:
-              OriginAccessIdentity: origin-access-identity/cloudfront/E757XVCJTNRIX
+        - DomainName: !Ref cloudfrontOriginName
+          Id: myS3Origin
+          S3OriginConfig:
+            OriginAccessIdentity: origin-access-identity/cloudfront/E238DECVLPT20Y
         Enabled: 'true'
-        Comment: Some comment
-        DefaultRootObject: index.htm
-        Logging:
-          IncludeCookies: 'false'
-          Bucket: clientasset-log.s3.amazonaws.com
-          Prefix: xspace
-        Aliases: []
+        PriceClass: 'PriceClass_All'
+        DefaultRootObject: index.html
         DefaultCacheBehavior:
-          AllowedMethods:
+            AllowedMethods:
             - DELETE
             - GET
             - HEAD
@@ -41,32 +36,20 @@ Resources:
             - PATCH
             - POST
             - PUT
-          TargetOriginId: myS3Origin
-          ForwardedValues:
-            QueryString: 'false'
-            Cookies:
-              Forward: none
-          TrustedSigners:
+            TargetOriginId: myS3Origin
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            TrustedSigners:
             - 1234567890EX
             - 1234567891EX
-          ViewerProtocolPolicy: allow-all
-        PriceClass: PriceClass_All
-        Restrictions:
-          GeoRestriction:
-            RestrictionType: whitelist
-            Locations:
-              - AQ
-              - CV
-        ViewerCertificate:
-          CloudFrontDefaultCertificate: 'true'
+            ViewerProtocolPolicy: allow-all
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      AccessControl: PublicRead
+      AccessControl: Private
       BucketName: !Ref xspaceBucketName
-      WebsiteConfiguration:
-        IndexDocument: index.htm
-        ErrorDocument: error.htm
   BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -74,9 +57,9 @@ Resources:
         Id: MyPolicy
         Version: 2012-10-17
         Statement:
-          - Sid: PublicReadForGetBucketObjects
+          - Sid: PublicReadForCloudfront
             Effect: Allow
-            Principal: '*'
+            Principal: 'origin-access-identity/cloudfront/E238DECVLPT20Y'
             Action: 's3:GetObject'
             Resource: !Join 
               - ''
@@ -84,18 +67,20 @@ Resources:
                 - !Ref xspaceBucketName
                 - /*
       Bucket: !Ref S3Bucket
-  
 Outputs:
-  WebsiteURL:
-    Value: !GetAtt 
-      - S3Bucket
-      - WebsiteURL
+  CloudfrontURL:
+    Value: !GetAtt
+      - myDistribution
+      - DomainName
     Description: URL for website hosted on S3
-  S3BucketSecureURL:
+  CloudfrontDistribution:
+    Value: !Ref logicalName
+    Description: Cloudfront distribution ID
+  CloudfrontSecureURL:
     Value: !Join 
       - ''
       - - 'https://'
         - !GetAtt 
-          - S3Bucket
+          - myDistribution
           - DomainName
-    Description: Name of S3 bucket to hold website content
+    Description: Secure URL for cloudfront hosting
