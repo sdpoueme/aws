@@ -7,7 +7,7 @@ exports.handler = async(event) => {
     const job = event["CodePipeline.job"];
     const jobId = job.id;
 
-    const DistributionId = job.data.actionConfiguration.configuration.UserParameters || '<DISTRIBUTION ID>';
+    const DistributionId = job.data.actionConfiguration.configuration.UserParameters || '<PLACEHOLDER: DISTRIBUTION ID>';
 
     console.log(`invalidating CDN cache for DistributionId : ${DistributionId}...`);
 
@@ -50,8 +50,8 @@ exports.handler = async(event) => {
             jobId: jobId,
             failureDetails: {
                 message: JSON.stringify(err),
-                type: 'JobFailed',
-                externalExecutionId: context.awsRequestId
+                type: 'JobFailed'
+                //externalExecutionId: context.awsRequestId
             }
         };
         await codepipeline.putJobFailureResult(params).promise();
