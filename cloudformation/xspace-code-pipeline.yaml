@@ -6,19 +6,19 @@ Parameters:
   RepositoryName:
     Description: xspace CodeCommit repository name
     Type: String
-    Default: xspace-cinco-universe
+    Default: checkride-ts
   XSpaceCloudDist:
     Description: cloudfront  distribution
     Type: String
-    Default: xspace-cinco-universe
+    Default: checkride-ts
   XSpaceName:
     Description: xspace  name
     Type: String
-    Default: xspace-cinco-universe
+    Default: checkride-ts
   PipelineName:
     Description: xspace  name
     Type: String
-    Default: xspace-cinco-universe-pipeline
+    Default: checkride-ts
 
 Resources:
   CodePipelineArtifactStoreBucket:
@@ -165,7 +165,7 @@ Resources:
                 Provider: Lambda
                 Version: '1'
               Configuration:
-                FunctionName: invalidate-oilers-locke-room-cache
+                FunctionName: invalidate-cloudfront-cache
                 UserParameters: !Ref XSpaceCloudDist
               RunOrder: 2
 
