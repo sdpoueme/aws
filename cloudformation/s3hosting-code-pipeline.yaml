@@ -1,4 +1,8 @@
 Parameters:
+   InvalidationFunction:
+    Description: Lambda to call to invalidate cache
+    Type: String
+    Default: invalidate-cloudfront-cache
   BranchName:
     Description: CodeCommit branch name
     Type: String
@@ -6,19 +10,19 @@ Parameters:
   RepositoryName:
     Description: xspace CodeCommit repository name
     Type: String
-    Default: xspace-cinco-universe
+    Default: sdpoueme-demo
   HostingCloudDist:
     Description: cloudfront  distribution
     Type: String
-    Default: xspace-cinco-universe
+    Default: sdpoueme-demo
   HostingName:
     Description: xspace  name
     Type: String
-    Default: xspace-cinco-universe
+    Default: sdpoueme-demo
   PipelineName:
     Description: xspace  name
     Type: String
-    Default: xspace-cinco-universe-pipeline
+    Default: sdpoueme-demo
 
 Resources:
   CodePipelineArtifactStoreBucket:
@@ -165,7 +169,7 @@ Resources:
                 Provider: Lambda
                 Version: '1'
               Configuration:
-                FunctionName: invalidate-oilers-locke-room-cache
+                FunctionName: !Ref InvalidationFunction
                 UserParameters: !Ref HostingCloudDist
               RunOrder: 2
 
