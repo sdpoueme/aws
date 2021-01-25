@@ -2,16 +2,12 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   xspaceBucketName:
     Type: String
-    Default: xspace-cinco-universe
+    Default: checkride-ts
     Description: s3 bucket name
   cloudfrontOriginName:
     Type: String
-    Default: xspace-cinco-universe.s3.amazonaws.com
+    Default: checkride-ts.s3.amazonaws.com
     Description: s3 bucket name
-  xspaceAlias:
-    Type: String
-    Default: cinco-xspace.com/universe
-    Description: xspace domain name
 Resources:
   CodeCommit:
     Type: 'AWS::CodeCommit::Repository'
@@ -30,7 +26,7 @@ Resources:
               OriginAccessIdentity: origin-access-identity/cloudfront/E757XVCJTNRIX
         Enabled: 'true'
         Comment: Some comment
-        DefaultRootObject: index.html
+        DefaultRootObject: index.htm
         Logging:
           IncludeCookies: 'false'
           Bucket: clientasset-log.s3.amazonaws.com
@@ -69,8 +65,8 @@ Resources:
       AccessControl: PublicRead
       BucketName: !Ref xspaceBucketName
       WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
+        IndexDocument: index.htm
+        ErrorDocument: error.htm
   BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
