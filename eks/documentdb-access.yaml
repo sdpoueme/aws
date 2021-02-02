@@ -1,0 +1,16 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+ 
+metadata:
+  name: calar-eks
+  region: us-east-1
+ 
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: documentdb-access
+      namespace: calar
+      labels: {role: "backend"}
+    attachPolicyARNs:
+    - "arn:aws:iam::aws:policy/AmazonDocDBFullAccess"
