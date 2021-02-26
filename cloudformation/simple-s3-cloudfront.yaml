@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Template to create a static web site with cloudfront backed by S3"
+Metadata:
+  myDistribution:
+    Description: "A cloudfront distribution"
+  S3Bucket:
+    Description: "An S3 bucket to host static content"
+Parameters:
+  hostingBucketName:
+    Type: String
+    Default: another-checkride-demo
+    Description: s3 bucket name
+  cloudfrontOriginName:
+    Type: String
+    Default: another-checkride-demo.s3.amazonaws.com
+    Description: s3 bucket name
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: Private
+      BucketName: !Ref hostingBucketName
+  myDistribution:
+    Type: 'AWS::CloudFront::Distribution'
+    DependsOn: S3Bucket
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+            ViewerProtocolPolicy: redirect-to-https
+            DefaultTTL: 3600
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: true
+            TargetOriginId: myS3Origin
+        Enabled: 'true'
+        Origins:
+          - DomainName: !Ref cloudfrontOriginName
+            Id: myS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: origin-access-identity/cloudfront/E2AXFG5DB8Q4J8
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    DependsOn: myDistribution
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForCloudfront
+            Effect: Allow
+            Principal:
+              AWS:
+                - 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E2AXFG5DB8Q4J8'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref hostingBucketName
+                - /*
+      Bucket: !Ref S3Bucket
+Outputs:
+  CloudfrontURL:
+    Value: !GetAtt
+      - myDistribution
+      - DomainName
+    Description: URL for website hosted on S3
+  CloudfrontSecureURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - myDistribution
+          - DomainName
+    Description: Secure URL for cloudfront hosting
