@@ -1,0 +1,7 @@
+Server|~|Date Time|~|Status
+admin.examplecom|~|2016-03-05 07:04:00|~|down
+webapp.examplecom|~|2016-03-05 07:04:00|~|ok
+admin.examplecom|~|2016-03-05 07:04:30|~|rebooting
+webapp.examplecom|~|2016-03-05 07:04:00|~|ok
+admin.examplecom|~|2016-03-05 07:05:00|~|ok
+webapp.examplecom|~|2016-03-05 07:05:00|~|ok
