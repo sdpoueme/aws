@@ -1,3 +1,3 @@
-# data samples for analytics labs
+# Data samples for analytics labs
 * AVRO
 * EBCDIC
