@@ -2,6 +2,6 @@ Simple python script that loops over data sources and extract SLA relevant text 
 
 # Usage
 
-Install depedencies with  pip3 (yaml,html2text,requests, boto3). 
-Run with Python3. 
+- Install depedencies with  pip3 (yaml,html2text,requests, boto3). 
+- Run with Python3. 
 
