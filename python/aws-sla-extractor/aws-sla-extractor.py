@@ -26,8 +26,8 @@ with open(r'sla-sources.yaml') as file:
         #print(json.dumps(comprehend.detect_entities(Text=sla_text, LanguageCode='en'), sort_keys=True, indent=4))
         #print('End of DetectEntities\n')
 
-        sla_entities=comprehend.detect_entities(Text=sla_text, LanguageCode='en')['Entities']
-        #print(sla_text)
+        sla_entities=comprehend.detect_entities(Text=sla_text.rstrip('\n'), LanguageCode='en')['Entities']
+
         #print(sla_entities)
         service_name=fromstring(page.content).findtext('.//title')
         service_sla=""
@@ -35,7 +35,7 @@ with open(r'sla-sources.yaml') as file:
 
         for entity in sla_entities:
 
-            if(entity['Type']=='QUANTITY' and entity['Text']!='each' and entity['Text']!='each case' and entity['Text']!='at least' and entity['Text']!='each Transit'):
+            if(entity['Type']=='QUANTITY' and "%" in entity['Text']):
                 service_sla=entity['Text']
             if(service_sla!=""):
                 break
